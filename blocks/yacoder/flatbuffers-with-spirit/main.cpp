@@ -9,7 +9,7 @@
 #define BOOST_SPIRIT_DEBUG
 #include "boost/spirit/include/qi.hpp"
 #include "boost/spirit/include/phoenix.hpp"
-
+//#include "boost/optional.hpp"
 
 #include <map>
 #include <vector>
@@ -17,8 +17,12 @@
 #include <utility>
 
 using namespace std;
+
+namespace fusion = boost::fusion;
 namespace qi = boost::spirit::qi;
 namespace phoenix = boost::phoenix;
+
+using boost::optional;
 
 // http://boost-spirit.com/home/articles/qi-example/zero-to-60-mph-in-2-seconds/
 // http://stackoverflow.com/questions/10474571/how-to-match-unicode-characters-with-boostspirit
@@ -31,25 +35,21 @@ BOOST_FUSION_DEFINE_STRUCT(
     (),
     field_type_type,
     (string, type_name)
-    (bool, is_array));
+            (bool, is_array)
+    );
+
+BOOST_FUSION_DEFINE_STRUCT(
+        (),
+        field_decl_type,
+        (string, field_name)
+                (field_type_type, field_type));
 
 BOOST_FUSION_DEFINE_STRUCT(
     (),
-    field_decl_type,
-    (string, field_name)
-    (field_type_type, field_type));
-
-BOOST_FUSION_DEFINE_STRUCT(
-    (),
-    struct_decl_type,
-    (string, struct_name)
-    (vector<field_type_type>, fields));
-
-BOOST_FUSION_DEFINE_STRUCT(
-    (),
-    table_decl_type,
-    (string, table_name)
-    (vector<field_type_type>, fields));
+    type_decl_type,
+    (string, type_name)
+    (std::vector<field_decl_type>, fields)
+            );
 
 BOOST_FUSION_DEFINE_STRUCT(
     (),
@@ -59,10 +59,11 @@ BOOST_FUSION_DEFINE_STRUCT(
 BOOST_FUSION_DEFINE_STRUCT(
     (),
     flatbuffers_manifest_type,
-    (root_decl_type, root_decl)
+            (std::vector<type_decl_type>, types)
+            (root_decl_type, root_decl)
     );
 
-
+// http://google.github.io/flatbuffers/md__grammar.html
 template<typename Iterator>
 struct flatbuffers_grammar : qi::grammar<Iterator, flatbuffers_manifest_type(), qi::space_type>
 {
@@ -72,35 +73,44 @@ struct flatbuffers_grammar : qi::grammar<Iterator, flatbuffers_manifest_type(), 
         using namespace qi;
 
         ident = char_("a-zA-Z") >> *char_("a-zA-Z_0-9");
-        primitive_type = qi::string("bool") | qi::string("byte") | qi::string("ubyte")
-                         | qi::string("short") | qi::string("ushort") | qi::string("int")
-                         | qi::string("uint") | qi::string("float") | qi::string("long")
-                         | qi::string("ulong") | qi::string("double") | qi::string("string");
+//        primitive_type = qi::string("bool") | qi::string("byte") | qi::string("ubyte")
+//                         | qi::string("short") | qi::string("ushort") | qi::string("int")
+//                         | qi::string("uint") | qi::string("float") | qi::string("long")
+//                         | qi::string("ulong") | qi::string("double") | qi::string("string");
 
         // http://www.boost.org/doc/libs/1_57_0/libs/spirit/doc/html/spirit/qi/tutorials/employee___parsing_into_structs.html
-        quoted_string %= lexeme['"' >> +(char_ - '"') >> '"'];
+        quoted_string = lexeme['"' >> +(char_ - '"') >> '"'];
 
         // "type" definition in flatbuffers grammar allows nested arrays... ?
-        field_type = primitive_type
-                     | ident
-                     | (('[' >> (primitive_type | ident) >> ']') [bind(&field_type_type::is_array, _val) = true]);
+
+        field_type = ident [_val = phoenix::construct<field_type_type>(_1, false)]
+                     | ('[' >> ident >> ']') [_val = phoenix::construct<field_type_type>(_1, true)];
 
         field_decl = ident >> ':' >> field_type >> ';';
+
+        //[bind(&type_decl_type::is_table, _val) = true])
+        type_decl = (lit("struct") | lit("table"))
+                    >> ident
+                    >> '{'
+                    >> *field_decl
+                    >> '}';
 
         // How to force some whitespace between "root_type" and ident?
         root_decl = "root_type" >> ident >> ';';
 
-        flatbuffers_manifest = root_decl;
+        flatbuffers_manifest = *type_decl ^ root_decl;
 
-        BOOST_SPIRIT_DEBUG_NODES((flatbuffers_manifest)(root_decl)(ident));
+        //BOOST_SPIRIT_DEBUG_NODES((flatbuffers_manifest)(root_decl)(ident));
     }
 
     qi::rule<Iterator, string()> ident;
-    qi::rule<Iterator, string()> primitive_type;
+    //qi::rule<Iterator, string()> primitive_type;
     qi::rule<Iterator, string()> quoted_string;
 
     qi::rule<Iterator, field_type_type(), qi::space_type> field_type;
     qi::rule<Iterator, field_decl_type(), qi::space_type> field_decl;
+
+    qi::rule<Iterator, type_decl_type(), qi::space_type> type_decl;
 
     qi::rule<Iterator, root_decl_type(), qi::space_type> root_decl;
 
@@ -137,6 +147,29 @@ root_type Test;
     flatbuffers_manifest_type m;
     REQUIRE( parse_manifest(test, m) );
     REQUIRE( m.root_decl.root_type == "Test" );
+
+    REQUIRE( m.types.size() == 2 );
+    REQUIRE( m.types[0].type_name == "Test" );
+    REQUIRE( m.types[1].type_name == "Stat" );
+
+    REQUIRE ( m.types[0].fields.size() == 2 );
+    REQUIRE ( m.types[0].fields[0].field_name == "a" );
+    REQUIRE ( m.types[0].fields[0].field_type.type_name == "short" );
+    REQUIRE ( m.types[0].fields[0].field_type.is_array == false );
+    REQUIRE ( m.types[0].fields[1].field_name == "b" );
+    REQUIRE ( m.types[0].fields[1].field_type.type_name == "byte" );
+    REQUIRE ( m.types[0].fields[1].field_type.is_array == false );
+
+    REQUIRE ( m.types[1].fields.size() == 3 );
+    REQUIRE ( m.types[1].fields[0].field_name == "id" );
+    REQUIRE ( m.types[1].fields[0].field_type.type_name == "string" );
+    REQUIRE ( m.types[1].fields[0].field_type.is_array == false );
+    REQUIRE ( m.types[1].fields[1].field_name == "val" );
+    REQUIRE ( m.types[1].fields[1].field_type.type_name == "long" );
+    REQUIRE ( m.types[1].fields[1].field_type.is_array == true );
+    REQUIRE ( m.types[1].fields[2].field_name == "count" );
+    REQUIRE ( m.types[1].fields[2].field_type.type_name == "ushort" );
+    REQUIRE ( m.types[1].fields[2].field_type.is_array == false );
 }
 
 

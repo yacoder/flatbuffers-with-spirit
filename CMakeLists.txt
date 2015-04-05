@@ -2,7 +2,7 @@ PROJECT( flatbuffers-with-spirit )
 cmake_minimum_required(VERSION 3.0)
 
 # Set project layout variables
-SET(BII_PROJECT_ROOT "C:/dev/github/flatbuffers-with-spirit")
+SET(BII_PROJECT_ROOT "D:/src/github/flatbuffers-with-spirit")
 SET(BII_BLOCKS_DIR blocks)
 SET(BII_DEPS_DIR deps)
 SET(BII_LIB_DIR lib)
