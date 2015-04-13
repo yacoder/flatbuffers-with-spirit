@@ -4,5 +4,6 @@ build/
 cmake/
 deps/
 .idea/
+lib/
 CMakeLists.txt
 *.cmake
