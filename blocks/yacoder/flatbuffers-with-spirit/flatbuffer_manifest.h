@@ -62,7 +62,7 @@ struct flatbuffer_manifest
    struct root_type_declaration
    {
       std::string name;
-   } 
+   }
    root_type;
 };
 
