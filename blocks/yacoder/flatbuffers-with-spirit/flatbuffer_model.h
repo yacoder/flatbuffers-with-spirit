@@ -30,12 +30,13 @@ SOFTWARE.
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace yacoder { namespace flatbuffers {
 
 struct flatbuffer_model
 {
-
+   std::vector<int> vec;
 };
 
 /* Generates C++ code to handle the given flatbuffer model. 

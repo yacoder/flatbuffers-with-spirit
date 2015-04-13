@@ -2,6 +2,7 @@
 #include "catch.hpp"
 
 #include "yacoder/flatbuffers-with-spirit/flatbuffer_manifest.h"
+#include "yacoder/flatbuffers-with-spirit/flatbuffer_model.h"
 
 using namespace std;
 using namespace yacoder::flatbuffers;
@@ -55,4 +56,13 @@ root_type Test;
     REQUIRE ( m.type_definitions[1].field_definitions[2].name == "count" );
     REQUIRE ( m.type_definitions[1].field_definitions[2].type.name == "ushort" );
     REQUIRE ( m.type_definitions[1].field_definitions[2].type.is_array == false );
+}
+
+TEST_CASE( "Generate simple cpp output", "" )
+{
+    flatbuffer_model m;
+    m.vec = { 1, 2, 3 };
+    string output;
+    REQUIRE( TryGenerateCpp(m, output) );
+    REQUIRE( output == "1 , 2 , 3 " );
 }
