@@ -77,6 +77,7 @@ BOOST_FUSION_ADAPT_STRUCT
 BOOST_FUSION_ADAPT_STRUCT
 (
    type_definition,
+   (bool, is_struct)
    (string, name)
    (std::vector<field_definition>, field_definitions)
 );
@@ -120,7 +121,8 @@ struct flatbuffers_grammar : qi::grammar<Iterator, flatbuffer_manifest(), qi::sp
         field_decl = ident >> ':' >> field_type_rule >> ';';
 
         //[bind(&type_decl_type::is_table, _val) = true])
-        type_decl = (lit("struct") | lit("table"))
+        type_decl = (    (lit("struct") >> attr(true)) 
+                       | (lit("table")  >> attr(false)))
                     >> ident
                     >> '{'
                     >> *field_decl

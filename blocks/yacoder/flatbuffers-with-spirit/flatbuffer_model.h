@@ -29,54 +29,19 @@ SOFTWARE.
 */
 #pragma once
 
+#include <string>
+
 namespace yacoder { namespace flatbuffers {
 
-struct flatbuffer_manifest
+struct flatbuffer_model
 {
-   struct type_definition
-   {
-      std::string name; //!< Name of the type from the IDL file.
-      
-      struct field_definition
-      {
-          std::string name; //!< Name of the field from the IDL file.
 
-          struct field_type
-          {
-              std::string name; //!< Name of the type from the IDL file.
-              bool is_array;    //!< Whether the field is array type, e.g. true for "[int]".
-          }
-          type; //!< Type of the field, such as "int", "[bool]", or "MyStruct".
-      };
-
-      /* Types have fieds. */
-      std::vector<field_definition> field_definitions;
-   };
-
-   /* Tables and structs as defined in the IDL file. */
-   std::vector<type_definition> type_definitions; 
-
-   /* Flatbuffers IDL file must declare a root type. */
-   struct root_type_declaration
-   {
-   	std::string name;
-   } 
-   root_type;
 };
 
-/* Attempts to parse the given string as Flatbuffers IDL. 
+/* Generates C++ code to handle the given flatbuffer model. 
 */
-bool TryParseIdlString(
-   const std::string& input_text,
-   std::function<std::string(const std::string& include)>() include_resolver,
-   std::vector<std::string>& errors,
-   flatbuffers_manifest& output);
-
-/* Attempts to parse the given string as Flatbuffers IDL. 
-*/
-bool TryParseIdlFile(
-   const std::string& input_file_path,
-   std::vector<std::string>& errors,
-   flatbuffers_manifest& output);
+bool TryGenerateCpp(
+   const flatbuffer_model& input_model,
+   std::string& output);
 
 }} // END namespace yacoder::flatbuffers 

@@ -34,6 +34,9 @@ root_type Test;
     REQUIRE( m.type_definitions[0].name == "Test" );
     REQUIRE( m.type_definitions[1].name == "Stat" );
 
+    REQUIRE(m.type_definitions[0].is_struct == true);
+    REQUIRE(m.type_definitions[1].is_struct == false);
+
     REQUIRE ( m.type_definitions[0].field_definitions.size() == 2 );
     REQUIRE ( m.type_definitions[0].field_definitions[0].name == "a" );
     REQUIRE ( m.type_definitions[0].field_definitions[0].type.name == "short" );

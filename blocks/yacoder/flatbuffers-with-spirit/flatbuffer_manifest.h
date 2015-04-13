@@ -37,6 +37,7 @@ struct flatbuffer_manifest
 {
    struct type_definition
    {
+      bool is_struct;   //!< "True", if type is a struct; "false", if table.
       std::string name; //!< Name of the type from the IDL file.
       
       struct field_definition
@@ -45,8 +46,8 @@ struct flatbuffer_manifest
 
           struct field_type
           {
-              std::string name; //!< Name of the type from the IDL file.
-              bool is_array;    //!< Whether the field is array type, e.g. true for "[int]".
+              std::string name; //!< Name of the type, without square brackets for arrays.
+              bool is_array;    //!< Whether the type is array, e.g. true for "[int]".
           }
           type; //!< Type of the field, such as "int", "[bool]", or "MyStruct".
       };
