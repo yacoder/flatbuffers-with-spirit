@@ -61,6 +61,19 @@ bool TryGenerateCpp(
    const flatbuffer_model& input_model,
    string& output)
 {
+   // Produce the output as described in:
+   // http://google.github.io/flatbuffers/md__internals.html
+   //
+   // 1. Prologoue.
+   // 2. Enums.
+   // 3. Unions.
+   // 4. Forward declare structs and tables types.
+   // 5. Define structs: 1 definition + ugly macros to fix alignment. 
+   // 6. Define tables: 3 definitions (table, builder, factory method).
+   // 7. Get root type accessor.
+   // 8. Epilogue.
+
+
    std::back_insert_iterator<std::string> sink(output);
    return generate_numbers(sink, input_model.vec);
 }
