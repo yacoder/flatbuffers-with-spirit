@@ -38,22 +38,22 @@ SOFTWARE.
 using namespace std;
 using namespace yacoder::flatbuffers;
 
-    // http://www.boost.org/doc/libs/1_57_0/libs/spirit/example/karma/num_list2.cpp
-    template <typename OutputIterator, typename Container>
-    bool generate_numbers(OutputIterator& sink, Container const& v)
-    {
-        using boost::spirit::karma::int_;
-        using boost::spirit::karma::generate_delimited;
-        using boost::spirit::ascii::space;
+namespace karma = boost::spirit::karma;
 
-        bool r = generate_delimited(
-            sink,                           // destination: output iterator
-            int_ % ',',                     // the generator
-            space,                          // the delimiter-generator
-            v                               // the data to output 
-        );
-        return r;
-    }
+// http://www.boost.org/doc/libs/1_57_0/libs/spirit/example/karma/num_list2.cpp
+template <typename OutputIterator, typename Container>
+bool generate_numbers(OutputIterator& sink, Container const& v)
+{
+   using namespace karma;
+
+   bool r = generate_delimited(
+      sink,                           // destination: output iterator
+      int_ % ',',                     // the generator
+      ascii::space,                   // the delimiter-generator
+      v                               // the data to output 
+   );
+   return r;
+}
 
 namespace yacoder { namespace flatbuffers {
 
