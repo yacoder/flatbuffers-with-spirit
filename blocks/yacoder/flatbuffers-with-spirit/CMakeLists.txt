@@ -1,13 +1,8 @@
-ADD_BIICODE_TARGETS()
+ADD_BII_TARGETS()
 
-# INCLUDE(biicode/cmake/tools) # Include tools.cmake file from cmake block from the "biicode" user
-# ACTIVATE_CPP11(INTERFACE ${BII_BLOCK_TARGET})
-
-    IF(APPLE)
-         TARGET_COMPILE_OPTIONS(${BII_BLOCK_TARGET} INTERFACE "-std=c++11 -stdlib=libc++")
-    ELSEIF (WIN32 OR UNIX)
-         TARGET_COMPILE_OPTIONS(${BII_BLOCK_TARGET} INTERFACE "-std=c++11")
-    ENDIF(APPLE)
+# https://www.biicode.com/biicode/cmake
+include(biicode/cmake/tools) # Include tools.cmake file from cmake block from the "biicode" user
+ACTIVATE_CPP11(INTERFACE ${BII_BLOCK_TARGET}) # Activate C++11 for your biicode interface block target
 
 include(biicode/boost/setup)
 set(Boost_USE_STATIC_LIBS ON)
