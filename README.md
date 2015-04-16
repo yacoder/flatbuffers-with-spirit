@@ -10,7 +10,7 @@ This is only an experimental project. Flatbuffers specification does not seem to
 
 Instruction verified on Windows, but should not be very much different on OS X.
 
-- Have biicode and CMake installed.
+- Have fresh biicode and CMake installed.
 - Clone this repo.
 - `bii init` in the repo folder
 - `bii configure` with the right parameters (see *.cmd for examples, but you may need to change paths in there)
