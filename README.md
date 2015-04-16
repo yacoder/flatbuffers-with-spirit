@@ -12,7 +12,7 @@ Instruction verified on Windows, but should not be very much different on OS X.
 
 - Have fresh biicode and CMake installed.
 - Clone this repo.
-- `bii init` in the repo folder
+- `bii init` in the repo folder (`bii init -l clion` if you wish to work with the project using CLion IDE)
 - `bii configure` with the right parameters (see *.cmd for examples, but you may need to change paths in there)
 - `bii build` (or build from VS or CLion using the files produced in the previous step)
 - Run `bin/yacoder_flatbuffers-with-spirit-test_main.exe`, all test cases should pass
