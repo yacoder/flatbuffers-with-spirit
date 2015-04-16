@@ -1,16 +1,19 @@
 # flatbuffers-with-spirit
 
-Google flatbuffers implementation using Boost.Spirit and Biicode.
-Blog: http://yacoder.net/blog/2015/04/05/boost-spirit-flatbuffers-catch-biicode-clion-github/
+Google flatbuffers implementation using Boost.Spirit grammars and Biicode dependency manager.
 
-Not yet stable.
+Blog post: http://yacoder.net/blog/2015/04/05/boost-spirit-flatbuffers-catch-biicode-clion-github/
+
+This is only an experimental project. Flatbuffers specification does not seem to fully describe the binary layout, and so I have no way of guaranteeing 100% compatibility in all cases.
 
 # How to build
 
-- Have biicode and CMake installed
-- Clone repo.
+Instruction verified on Windows, but should not be very much different on OS X.
+
+- Have fresh biicode and CMake installed.
+- Clone this repo.
 - `bii init` in the repo folder
 - `bii configure` with the right parameters (see *.cmd for examples, but you may need to change paths in there)
 - `bii build` (or build from VS or CLion using the files produced in the previous step)
-- run, all test cases should pass
+- Run `bin/yacoder_flatbuffers-with-spirit-test_main.exe`, all test cases should pass
 
