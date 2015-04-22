@@ -2,7 +2,9 @@
 
 Google flatbuffers implementation using Boost.Spirit grammars and Biicode dependency manager.
 
-Blog post: http://yacoder.net/blog/2015/04/05/boost-spirit-flatbuffers-catch-biicode-clion-github/
+Blog posts:
+  * http://yacoder.net/blog/2015/04/05/boost-spirit-flatbuffers-catch-biicode-clion-github/
+  * http://yacoder.net/blog/2015/04/21/mini-update-on-flatbuffers-with-spirit/
 
 This is only an experimental project. Flatbuffers specification does not seem to fully describe the binary layout, and so I have no way of guaranteeing 100% compatibility in all cases.
 
